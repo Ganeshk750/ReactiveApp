@@ -3,6 +3,9 @@ package com.ganesh.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.ganesh.model.Reservation;
@@ -31,13 +34,25 @@ public class ReservationServiceImpl implements ReservationService{
 
 	@Override
 	public Mono<Reservation> updateReservation(String id, Mono<Reservation> reservationMono) {
-		return null;
+		
+		return reservationMono.flatMap(reservation -> reactiveMongoOperation.findAndModify(
+				Query.query(Criteria.where("id").is(id)), 
+				Update.update("price", reservation.getPrice()), Reservation.class)
+				.flatMap(result -> {
+					result.setPrice(reservation.getPrice());
+					return Mono.just(result);
+				})
+				
+			);
 	}
 
 	@Override
 	public Mono<Boolean> deleteReservation(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	
+		return reactiveMongoOperation.remove(
+				Query.query(Criteria.where("id").is(id)), Reservation.class)
+				    .flatMap(deletedResult -> Mono.just(deletedResult.wasAcknowledged())
+				);
 	}
 
 }
