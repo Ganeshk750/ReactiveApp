@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.ganesh.model.Reservation;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -53,6 +54,12 @@ public class ReservationServiceImpl implements ReservationService{
 				Query.query(Criteria.where("id").is(id)), Reservation.class)
 				    .flatMap(deletedResult -> Mono.just(deletedResult.wasAcknowledged())
 				);
+	}
+
+	@Override
+	public Flux<Reservation> listAllReservations() {
+	
+		return reactiveMongoOperation.findAll(Reservation.class);
 	}
 
 }

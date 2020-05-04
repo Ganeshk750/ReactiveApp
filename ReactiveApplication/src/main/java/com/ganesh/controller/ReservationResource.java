@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ganesh.model.Reservation;
 import com.ganesh.service.ReservationService;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -61,6 +62,17 @@ public class ReservationResource {
 		//return Mono.just(true);
 		
 		return reservationService.deleteReservation(id);
+	}
+	
+	
+
+	@GetMapping(path="", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Flux<Reservation> getAllReservation(){
+		
+		//return Mono.just("{}");
+		
+		return reservationService.listAllReservations();
+		
 	}
 	
 	
